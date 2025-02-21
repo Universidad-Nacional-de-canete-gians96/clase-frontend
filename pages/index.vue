@@ -1,88 +1,127 @@
-<script lang="ts" setup>
-import { VListItemSubtitle } from 'vuetify/components';
+<script setup lang="ts">
+definePageMeta({
+  layout: "auth",
+});
+import type { Login } from "@/interfaces/Login.Interface"
+const apiURL = useCookie("apiURL");
+const userLogin = useCookie<Login>("user");
+const email = ref("");
+const password = ref("");
+const loadingLogin = ref(false)
+const SingUp = () => {
+  navigateTo('/inicio')
+};
+const { ruleEmail, rulePassLen, ruleRequired } = useFormRules();
+const decodeToken = ref()
+const msgAlert = ref("")
+const onClickLogin = async () => {
+  loadingLogin.value = true
+  if (!email.value || !password.value) {
+    msgAlert.value = "Llene los datos correctamente";
+    loadingLogin.value = false;
+    return;
+  }
+  // const { data: resLogin, pending: pendingLogin, error } = await useFetch<Login>(`${apiURL.value}/auth/login`,
+  //   {
+  //     method: "POST",
+  //     body: {
+  //       email: email.value,
+  //       password: password.value,
+  //     },
+  //     headers: {
+  //       // Authorization: `Bearer ${userCookie.value.token}`,
+  //     },
+  //   }
+  // );
+  // if (!resLogin.value?.status) {
+  //   msgAlert.value = "Las credenciales proporcionadas no son correctos";
+  //   loadingLogin.value = false;
+  //   return;
+  // }
+  // userLogin.value = resLogin.value
+  // loadingLogin.value = false;
+  navigateTo("/inicio")
 
-export interface Character {
-  info: Info;
-  results: Result[];
+};
+
+const decodeTokenBtn = async () => {
+  const { data: tokenDec } = await useFetch<Login>(`${apiURL.value}/auth/refresh-token`,
+    {
+      method: "POST",
+      body: {
+        token: userLogin.value.token
+      },
+      headers: {
+        // Authorization: `Bearer ${userCookie.value.token}`,
+      },
+    }
+  );
+  decodeToken.value = tokenDec.value
 }
-
-export interface Info {
-  count: number;
-  pages: number;
-  next: string;
-  prev: null;
-}
-
-export interface Result {
-  id: number;
-  name: string;
-  status: string;
-  species: string;
-  type: string;
-  gender: string;
-  origin: Location;
-  location: Location;
-  image: string;
-  episode: string[];
-  url: string;
-  created: Date;
-}
-
-
-const { data } = await useFetch<Character>('https://rickandmortyapi.com/api/character')
 
 </script>
+
 <template>
-  <v-container fluid>
-    <div >
-      <v-row>
-        <v-col v-for="item in data?.results" :key="item.id">
-          <v-card class="mx-auto" max-width="344">
-            <v-img height="200px" :src="item.image" cover></v-img>
+  <v-container fluid class="fill-height">
+    <v-row  no-gutters class="fill-height d-flex align-center justify-center" >
+      <v-col cols="12" md="6" lg="5" sm="6">
+        <v-row no-gutters class="d-flex align-center justify-center">
+          <v-col cols="12" md="6" >
+           
+            <h1>Iniciar sesión</h1>
+            <p class="text-medium-emphasis">Ingresa tus datos</p>
 
-            <v-card-title>
-              {{ item.name }}
-            </v-card-title>
+            <!-- <UtilsTextanimate></UtilsTextanimate> -->
 
-            <v-card-subtitle>
-              1,000 miles of wonder
-            </v-card-subtitle>
+            <!-- <VForm @submit.prevent="submit" class="mt-7"> -->
+              <v-card></v-card>
 
-            <v-card-actions>
-              <v-btn color="orange-lighten-2" text="Explore"></v-btn>
-
-              <v-spacer></v-spacer>
-
-              <!-- <v-btn :icon="show ? 'mdi-chevron-up' : 'mdi-chevron-down'" @click="show = !show"></v-btn> -->
-            </v-card-actions>
-
-            <v-expand-transition>
-              <div v-show="false">
-                <v-divider></v-divider>
-
-                <v-card-text>
-                  I'm a thing. But, like most politicians, he promised more than he could deliver. You won't have time
-                  for
-                  sleeping, soldier, not with all the bed making you'll be doing. Then we'll go with that data file!
-                  Hey,
-                  you
-                  add a one and two zeros to that or we walk! You're going to do his laundry? I've got to find a way to
-                  escape.
-                </v-card-text>
+              <div class="mt-1">
+                <label class="label text-grey-darken-2" for="email">Email</label>
+                <VTextField :rules="[ruleRequired, ruleEmail]" v-model="email" prepend-inner-icon="fluent:mail-24-regular"
+                  id="email" name="email" type="email"    @keydown.enter="onClickLogin" />
               </div>
-            </v-expand-transition>
-          </v-card>
-        </v-col>
-      </v-row>
+              <div class="mt-1">
+                <label class="label text-grey-darken-2" for="password">Contraseña</label>
+                <VTextField :rules="[ruleRequired, rulePassLen]" v-model="password"
+                  prepend-inner-icon="fluent:password-20-regular" id="password" name="password" type="password"  @keydown.enter="onClickLogin" />
+              </div>
+              <div class="my-2">
+                <v-alert v-if="msgAlert" color="error">{{ msgAlert }}</v-alert>
+              </div>
+              <div class="mt-5">
+                <!-- <VBtn type="submit" block min-height="44" class="gradient primary" to="/characters">Ingresar</VBtn> -->
+                <v-btn @click="onClickLogin" :loading="loadingLogin" block min-height="44"
+                  class="gradient primary">Ingresar</v-btn>
+              </div>
+            <!-- </VForm> -->
+            <!-- <p class="text-body-2 mt-10">
+              <NuxtLink to="/reset-password" class="font-weight-bold text-primary">¿Has olvidado tu contraseña?</NuxtLink>
+            </p>
+            <p class="text-body-2 mt-4">
+              <span>¿No tienes una cuenta?
+                <NuxtLink to="/signup" class="font-weight-bold text-primary">Registrate</NuxtLink>
+              </span>
+            </p> -->
+            <!-- <v-btn block min-height="44" @click="decodeTokenBtn()" class="gradient primary">decodetoken</v-btn> -->
 
-    </div>
-    <!-- {{ data?.results }} -->
+          </v-col>
+        </v-row>
+      </v-col>
+      <VCol class="hidden-md-and-down fill-height d-flex align-center justify-center" md="6" lg="7">
+        <VImg src="public/fondo/fondo1.png"  max-width="75%" 
+          >
+          <div class="text-center w-50 text-white mx-auto align-center">
 
-
-    <v-btn>Hello</v-btn>
-
-    <VBtn>Hola</VBtn>
+            <!-- <h2 class="mb-4">Sistema de Gestión Empresarial</h2> -->
+            <!-- <p>
+              Ventas.
+              Inventario.
+            </p> -->
+          </div>
+        </VImg>
+      </VCol>
+    </v-row>
 
   </v-container>
-
 </template>
