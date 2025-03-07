@@ -2,6 +2,7 @@
 const config = useRuntimeConfig()
 const baseURL = useCookie("BASE_URL");
 baseURL.value = config.public.baseURL
+
 </script>
 <template>
 	<div>

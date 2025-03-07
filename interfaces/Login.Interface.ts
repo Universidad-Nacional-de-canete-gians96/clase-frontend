@@ -1,10 +1,10 @@
 export interface Login {
     status?: boolean;
     msg?: string;
-    name: string;
+    nombres: string;
     email: string;
     token: string;
-    tipoUsuario?: string[];
+    tipoUsuario: string;
 
 }
 

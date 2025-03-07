@@ -3,14 +3,14 @@
 // const store = useStore()
 const drawer = useCookie<boolean>("drawer");
 const userLogin = useCookie<Login | null>("user");
-userLogin.value = {
-  status: true,
-  msg: "Hola",
-  name: "Jhon",
-  email: "jhon@gmail.com",
-  token: "123456789",
-  tipoUsuario: ["ADMIN"]
-}
+// userLogin.value = {
+//   status: true,
+//   msg: "Hola",
+//   name: "Jhon",
+//   email: "jhon@gmail.com",
+//   token: "123456789",
+//   tipoUsuario: ["ADMIN"]
+// }
 import { useDisplay } from 'vuetify'
 import type { Login } from '~/interfaces/Login.Interface';
 const { mobile } = useDisplay()
@@ -30,12 +30,12 @@ const logOut = async () => {
     <v-menu rounded :close-on-content-click="false" v-if="userLogin">
       <template v-slot:activator="{ props }">
         <v-list v-if="!mobile" class="hidden-sm-and-down" v-bind="props" style="cursor: pointer">
-          <v-list-item :title="userLogin.name" :subtitle="userLogin.email">
+          <v-list-item :title="userLogin.nombres" :subtitle="userLogin.email">
           </v-list-item>
         </v-list>
         <v-btn v-if="mobile" icon v-bind="props">
           <v-avatar color="brown" size="default">
-            <span class="text-h5">{{ userLogin.name.charAt(0) }}</span>
+            <span class="text-h5">{{ userLogin.nombres.charAt(0) }}</span>
           </v-avatar>
         </v-btn>
       </template>
@@ -43,9 +43,9 @@ const logOut = async () => {
         <v-card-text>
           <div class="mx-auto text-center">
             <v-avatar color="brown">
-              <span class="text-h5">{{ userLogin.name.charAt(0) }}</span>
+              <span class="text-h5">{{ userLogin.nombres.charAt(0) }}</span>
             </v-avatar>
-            <h3>{{ userLogin.name }}</h3>
+            <h3>{{ userLogin.nombres }}</h3>
             <p class="text-caption mt-1">
               {{ userLogin.email }}
             </p>
