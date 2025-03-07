@@ -1,40 +1,7 @@
 <script lang="ts" setup>
-export interface Character {
-  info: Info;
-  results: Result[];
-}
 
-export interface Info {
-  count: number;
-  pages: number;
-  next: string;
-  prev: null;
-}
-
-export interface Result {
-  id: number;
-  name: string;
-  status: string;
-  species: string;
-  type: string;
-  gender: string;
-  origin: Location;
-  location: Location;
-  image: string;
-  episode: string[];
-  url: string;
-  created?: Date;
-  show: Boolean;
-}
-export interface Location {
-  name: string;
-  url: string;
-}
-// const characters = localStorage.setItem("myCat", "Tom");
+import type { Character, Result } from '@/interfaces/Character.interface';
 const { data, refresh } = await useFetch<Character>('https://rickandmortyapi.com/api/character')
-
-
-
 const characterEdit = ref<Result>({
   id: 0,
   name: '',
@@ -82,6 +49,8 @@ const characterTemplate = ref<Result>({
 const nameModal = ref("New character")
 const dialog = ref(false)
 const indexCharacterList = ref<number | null>(null)
+const filterName = ref('')
+const filterAlive = ref('')
 const onClickNewCharacter = () => {
   nameModal.value = "New Character"
   dialog.value = true
@@ -113,7 +82,6 @@ const onClickDeleteCharacter = (index: number) => {
   if (!data.value.results) throw new Error("No data")
   data.value.results.splice(index, 1)
   localStorage.setItem("characters", JSON.stringify(data.value))
-
 }
 
 onMounted(() => {
@@ -128,13 +96,17 @@ onMounted(() => {
       })
     }
   }
-
 })
 
 </script>
 <template>
   <v-container fluid>
     <div>
+      <v-row>
+        <v-col cols="12" lg="4" md="4" sm="12" xs="12">
+          <v-text-field v-model="filterName" append-inner-icon="mdi-magnify" label="Buscar"></v-text-field>
+        </v-col>
+      </v-row>
       <v-row>
         <v-col cols="12" class="d-flex justify-center">
           <v-btn size="x-large" block color="blue" @click="onClickNewCharacter">Nuevo</v-btn>
